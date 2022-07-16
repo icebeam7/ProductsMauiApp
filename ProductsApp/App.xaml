@@ -1,0 +1,182 @@
+﻿<?xml version = "1.0" encoding = "UTF-8" ?>
+<Application xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:ProductsApp"
+             xmlns:converters="clr-namespace:ProductsApp.Converters"
+             xmlns:models="clr-namespace:ProductsApp.Models"
+             x:Class="ProductsApp.App">
+    <Application.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
+                <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <Color x:Key="LabelText">#1F1F1F</Color>
+            <Color x:Key="LabelTextDark">White</Color>
+
+            <Color x:Key="LightBackground">#FAF9F8</Color>
+            <Color x:Key="DarkBackground">Black</Color>
+
+            <Color x:Key="CardBackground">White</Color>
+            <Color x:Key="CardBackgroundDark">#1C1C1E</Color>
+            
+            <Style TargetType="Label" x:Key="BaseLabel">
+                <Setter Property="FontFamily" Value="OpenSansRegular" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource LabelText}, Dark={StaticResource LabelTextDark}}" />
+            </Style>
+
+            <Style x:Key="MicroLabel" BasedOn="{StaticResource BaseLabel}" TargetType="Label">
+                <Setter Property="FontSize" Value="10"/>
+            </Style>
+
+            <Style x:Key="SmallLabel" BasedOn="{StaticResource BaseLabel}" TargetType="Label">
+                <Setter Property="FontSize" Value="12"/>
+            </Style>
+
+            <Style x:Key="MediumLabel" BasedOn="{StaticResource BaseLabel}" TargetType="Label">
+                <Setter Property="FontSize" Value="16"/>
+            </Style>
+
+            <Style x:Key="LargeLabel" BasedOn="{StaticResource BaseLabel}" TargetType="Label">
+                <Setter Property="FontSize" Value="20"/>
+            </Style>
+
+            <Style ApplyToDerivedTypes="True" TargetType="RefreshView">
+                <Setter Property="RefreshColor" Value="{StaticResource Primary}" />
+                <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}" />
+            </Style>
+            
+            
+            <Style x:Key="ButtonOutline" TargetType="Button">
+                <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource White}}" />
+                <Setter Property="BorderWidth" Value="2" />
+                <Setter Property="HeightRequest" Value="40" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="HorizontalOptions" Value="Center" />
+            </Style>
+
+            <Style x:Key="CardView" TargetType="Frame">
+                <Setter Property="BorderColor" Value="#DDDDDD" />
+                <Setter Property="HasShadow" Value="True" />
+                <Setter Property="Padding" Value="0" />
+                <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource CardBackground}, Dark={StaticResource CardBackgroundDark}}" />
+                <Setter Property="CornerRadius" Value="10" />
+                <Setter Property="IsClippedToBounds" Value="True"/>
+            </Style>
+            
+            <converters:NewProductConverter x:Key="newProductConverter" />
+            <converters:DiscountConverter x:Key="discountConverter" />
+            <converters:RealPriceConverter x:Key="realPriceConverter" />
+
+            <DataTemplate x:Key="ProductTemplate" 
+                          x:DataType="models:Product">
+                <Frame
+                    Padding="0"
+                    BorderColor="Gray"
+                    CornerRadius="15"
+                    HasShadow="True"
+                    HeightRequest="180"
+                    HorizontalOptions="Start"
+                    IsClippedToBounds="True"
+                    WidthRequest="180">
+                    <Grid
+                        ColumnDefinitions="*,*"
+                        ColumnSpacing="0"
+                        HeightRequest="180"
+                        RowDefinitions="80,Auto,*,Auto"
+                        RowSpacing="0">
+
+                        <Frame HeightRequest="80" 
+                               Style="{StaticResource CardView}"
+                               Grid.Row="0"
+                               Grid.Column="0"
+                               Grid.ColumnSpan="2">
+                            <Image
+                                Aspect="AspectFill"
+                                HeightRequest="80"
+                                Source="{Binding PictureUrl}" />
+                        </Frame>
+
+                        <Label
+                            Grid.Row="2"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="2"
+                            Margin="5"
+                            Style="{StaticResource MediumLabel}"
+                            HorizontalOptions="Center"
+                            Text="{Binding Name}"
+                            LineBreakMode="TailTruncation"
+                            TextColor="DarkBlue"
+                            VerticalOptions="Center" />
+
+                        <Frame
+                            Grid.Row="1"
+                            Grid.Column="0"
+                            Margin="3"
+                            Padding="0"
+                            BackgroundColor="Green"
+                            BorderColor="Green"
+                            CornerRadius="5"
+                            HasShadow="False"
+                            HorizontalOptions="Start"
+                            IsClippedToBounds="True"
+                            Opacity="{Binding ReleaseDate, Converter={StaticResource newProductConverter}}">
+                            <Label
+                                FontAttributes="Bold"
+                                Style="{StaticResource SmallLabel}"
+                                HorizontalOptions="Center"
+                                Text="  NEW  "
+                                TextColor="#FAE072"
+                                VerticalOptions="Center" />
+                        </Frame>
+
+                        <Frame
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="3"
+                            Padding="0"
+                            BackgroundColor="Red"
+                            BorderColor="Red"
+                            CornerRadius="5"
+                            HasShadow="False"
+                            HorizontalOptions="End"
+                            IsClippedToBounds="True"
+                            Opacity="{Binding Discount, Converter={StaticResource discountConverter}}">
+                            <Label
+                                FontAttributes="Bold"
+                                Style="{StaticResource SmallLabel}"
+                                HorizontalOptions="Center"
+                                Text="{Binding Discount, StringFormat='  {0:N2}%  '}"
+                                TextColor="#FAE072"
+                                VerticalOptions="Center" />
+
+                        </Frame>
+
+                        <Label
+                            Grid.Row="3"
+                            Grid.Column="0"
+                            Margin="3"
+                            Style="{StaticResource SmallLabel}"
+                            HorizontalOptions="Start"
+                            Text="{Binding ., Converter={StaticResource realPriceConverter}, StringFormat='{0:C2}'}"
+                            TextColor="ForestGreen" />
+
+                        <Label
+                            Grid.Row="3"
+                            Grid.Column="1"
+                            Margin="3"
+                            Style="{StaticResource SmallLabel}"
+                            HorizontalOptions="End"
+                            Text="{Binding OriginalPrice, StringFormat='{0:C2}'}"
+                            TextColor="Gray"
+                            TextDecorations="Strikethrough" />
+                    </Grid>
+                </Frame>
+            </DataTemplate>            
+
+        </ResourceDictionary>
+    </Application.Resources>
+</Application>
